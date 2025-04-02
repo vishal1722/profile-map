@@ -68,7 +68,6 @@ function ProfileDetails() {
           <p><strong>Age:</strong> {profile.age}</p>
           <p><strong>Job:</strong> {profile.job}</p>
           <p><strong>Salary:</strong> {profile.salary}</p>
-          <p><strong>Salary:</strong> {profile.location}</p>
           <p><strong>Hobbies:</strong> {profile.hobbies}</p>
         </div>
         <h3 className="text-center mt-4">Location</h3>
