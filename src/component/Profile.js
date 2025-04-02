@@ -11,6 +11,7 @@ const initialProfiles = [
   { id: 5, name: "Emily Davis", age: 29, job: "AI Researcher", salary: "$95,000",location:"mubai", hobbies: "Chess, Music", photo: "/image5.jpeg", description: "Passionate AI scientist", lat: 48.8566, lng: 2.3522 }
 ];
 
+
 function ProfileList({ profiles, setProfiles }) {
   const [search, setSearch] = useState("");
   const filteredProfiles = profiles.filter((profile) => profile.name.toLowerCase().includes(search.toLowerCase()));
@@ -40,9 +41,10 @@ function ProfileList({ profiles, setProfiles }) {
               <img src={profile.photo} className="card-img-top rounded-top" alt={profile.name} style={{ height: "250px", objectFit: "cover" }} />
               <div className="card-body text-center">
                 <h5 className="card-title fw-bold text-dark">{profile.name}</h5>
-                <h5  className="card-title fw-bold text-dark">{profile.location}</h5>
+                <h5 className="card-title fw-bold text-dark">{profile.location}</h5>
                 <p className="card-text text-muted">{profile.description}</p>
                 <Link to={`/profile/${profile.id}`} className="btn btn-primary btn-sm">View Details</Link>
+                <Link to={`/edit/${profile.id}`} className="btn btn-warning btn-sm ms-2">Edit</Link>
                 <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(profile.id)}>Delete</button>
               </div>
             </div>
@@ -68,6 +70,7 @@ function ProfileDetails() {
           <p><strong>Age:</strong> {profile.age}</p>
           <p><strong>Job:</strong> {profile.job}</p>
           <p><strong>Salary:</strong> {profile.salary}</p>
+          <p><strong>Salary:</strong> {profile.location}</p>
           <p><strong>Hobbies:</strong> {profile.hobbies}</p>
         </div>
         <h3 className="text-center mt-4">Location</h3>
@@ -86,32 +89,49 @@ function ProfileDetails() {
   );
 }
 
+
 function AddEditProfile({ profiles, setProfiles }) {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", age: "", job: "", salary: "", hobbies: "", photo: "", description: "" });
+  const { id } = useParams();
+  const isEdit = !!id;
+  const profileToEdit = isEdit ? profiles.find(p => p.id === parseInt(id)) : {};
+  const [form, setForm] = useState({ 
+    name: profileToEdit?.name || "", 
+    age: profileToEdit?.age || "", 
+    job: profileToEdit?.job || "", 
+    salary: profileToEdit?.salary || "", 
+    hobbies: profileToEdit?.hobbies || "", 
+    photo: profileToEdit?.photo || "", 
+    description: profileToEdit?.description || "" 
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setProfiles([...profiles, { id: profiles.length + 1, ...form }]);
+    if (isEdit) {
+      setProfiles(profiles.map(profile => profile.id === parseInt(id) ? { ...profile, ...form } : profile));
+    } else {
+      setProfiles([...profiles, { id: profiles.length + 1, ...form }]);
+    }
     navigate("/");
   };
 
   return (
     <div className="container mt-4">
-      <h2 className="text-center text-success">Add Profile</h2>
+      <h2 className="text-center text-success">{isEdit ? "Edit Profile" : "Add Profile"}</h2>
       <form onSubmit={handleSubmit} className="p-4 shadow rounded bg-light">
-        <input type="text" className="form-control mb-2" placeholder="Name" onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-        <input type="number" className="form-control mb-2" placeholder="Age" onChange={(e) => setForm({ ...form, age: e.target.value })} required />
-        <input type="text" className="form-control mb-2" placeholder="Job" onChange={(e) => setForm({ ...form, job: e.target.value })} required />
-        <input type="text" className="form-control mb-2" placeholder="Salary" onChange={(e) => setForm({ ...form, salary: e.target.value })} required />
-        <input type="text" className="form-control mb-2" placeholder="Hobbies" onChange={(e) => setForm({ ...form, hobbies: e.target.value })} required />
-        <input type="text" className="form-control mb-2" placeholder="Photo URL" onChange={(e) => setForm({ ...form, photo: e.target.value })} required />
-        <textarea className="form-control mb-2" placeholder="Description" onChange={(e) => setForm({ ...form, description: e.target.value })} required />
-        <button type="submit" className="btn btn-success w-100">Add Profile</button>
+        <input type="text" className="form-control mb-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+        <input type="number" className="form-control mb-2" placeholder="Age" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} required />
+        <input type="text" className="form-control mb-2" placeholder="Job" value={form.job} onChange={(e) => setForm({ ...form, job: e.target.value })} required />
+        <input type="text" className="form-control mb-2" placeholder="Salary" value={form.salary} onChange={(e) => setForm({ ...form, salary: e.target.value })} required />
+        <input type="text" className="form-control mb-2" placeholder="Hobbies" value={form.hobbies} onChange={(e) => setForm({ ...form, hobbies: e.target.value })} required />
+        <input type="text" className="form-control mb-2" placeholder="Photo URL" value={form.photo} onChange={(e) => setForm({ ...form, photo: e.target.value })} required />
+        <textarea className="form-control mb-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+        <button type="submit" className="btn btn-success w-100">{isEdit ? "Save Changes" : "Add Profile"}</button>
       </form>
     </div>
   );
 }
+
 
 function App() {
   const [profiles, setProfiles] = useState(initialProfiles);
@@ -122,6 +142,7 @@ function App() {
         <Route path="/" element={<ProfileList profiles={profiles} setProfiles={setProfiles} />} />
         <Route path="/profile/:id" element={<ProfileDetails />} />
         <Route path="/add" element={<AddEditProfile profiles={profiles} setProfiles={setProfiles} />} />
+        <Route path="/edit/:id" element={<AddEditProfile profiles={profiles} setProfiles={setProfiles} />} />
       </Routes>
     </Router>
   );
