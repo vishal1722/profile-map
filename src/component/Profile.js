@@ -56,9 +56,10 @@ function ProfileList({ profiles, setProfiles }) {
   );
 }
 
-function ProfileDetails() {
+
+function ProfileDetails({ profiles }) {
   let { id } = useParams();
-  const profile = initialProfiles.find((p) => p.id === parseInt(id));
+  const profile = profiles.find((p) => p.id === parseInt(id));
   if (!profile) return <h2 className="text-center mt-4 text-danger">Profile not found</h2>;
 
   return (
@@ -70,7 +71,7 @@ function ProfileDetails() {
           <p><strong>Age:</strong> {profile.age}</p>
           <p><strong>Job:</strong> {profile.job}</p>
           <p><strong>Salary:</strong> {profile.salary}</p>
-          <p><strong>Salary:</strong> {profile.location}</p>
+          <p><strong>Location:</strong> {profile.location}</p>
           <p><strong>Hobbies:</strong> {profile.hobbies}</p>
         </div>
         <h3 className="text-center mt-4">Location</h3>
@@ -102,7 +103,8 @@ function AddEditProfile({ profiles, setProfiles }) {
     salary: profileToEdit?.salary || "", 
     hobbies: profileToEdit?.hobbies || "", 
     photo: profileToEdit?.photo || "", 
-    description: profileToEdit?.description || "" 
+    description: profileToEdit?.description || "", 
+    location: profileToEdit?.location || "" 
   });
 
   const handleSubmit = (e) => {
@@ -124,6 +126,7 @@ function AddEditProfile({ profiles, setProfiles }) {
         <input type="text" className="form-control mb-2" placeholder="Job" value={form.job} onChange={(e) => setForm({ ...form, job: e.target.value })} required />
         <input type="text" className="form-control mb-2" placeholder="Salary" value={form.salary} onChange={(e) => setForm({ ...form, salary: e.target.value })} required />
         <input type="text" className="form-control mb-2" placeholder="Hobbies" value={form.hobbies} onChange={(e) => setForm({ ...form, hobbies: e.target.value })} required />
+        <input type="text" className="form-control mb-2" placeholder="Location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required />
         <input type="text" className="form-control mb-2" placeholder="Photo URL" value={form.photo} onChange={(e) => setForm({ ...form, photo: e.target.value })} required />
         <textarea className="form-control mb-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
         <button type="submit" className="btn btn-success w-100">{isEdit ? "Save Changes" : "Add Profile"}</button>
@@ -140,7 +143,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<ProfileList profiles={profiles} setProfiles={setProfiles} />} />
-        <Route path="/profile/:id" element={<ProfileDetails />} />
+        <Route path="/profile/:id" element={<ProfileDetails profiles={profiles} />} />
         <Route path="/add" element={<AddEditProfile profiles={profiles} setProfiles={setProfiles} />} />
         <Route path="/edit/:id" element={<AddEditProfile profiles={profiles} setProfiles={setProfiles} />} />
       </Routes>
@@ -148,4 +151,5 @@ function App() {
   );
 }
 
+export default App;
 export default App;
